@@ -19,6 +19,7 @@ import _mysql
 
 
 
+
 #Method that sends email from the gmail account given
 def send_email(user, pwd, to_adress, subject, message):
     """
@@ -52,7 +53,8 @@ def send_email(user, pwd, to_adress, subject, message):
     server.sendmail(user, to_adress, msg)
     server.quit()
 
-#end of send_email    
+#end of send_email
+
 
 #The methods that extracts the lowest lifeMiles value for a given trip
 def extract_movies(min_id, max_id):
