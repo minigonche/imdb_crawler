@@ -54,8 +54,40 @@ class Movie:
 #End of class Movie    
         
 
-
-
+#Method that interprets the time format of IMDB and extracts the number of minutes
+def to_minutes(duration):
+    """
+        Parameters
+        ----------
+        duration : String
+            the duration of the movie in the IMDB format. Usually #h##min, but can also
+            be #min
+    """
+    
+    duration = duration.replace(' ','')
+    days = 0
+    hours = 0
+    minutes = 0
+    
+    if('d' in duration):
+        days = int(duration.split('d')[0] )
+        duration = duration.split('d')[1]
+    
+    
+    if('h' in duration):
+        hours = int( duration.split('h')[0])
+        if(len(duration.split('h'))>1):
+            duration = duration.split('h')[1]
+    
+    duration = duration.replace('min','') 
+    duration = duration.replace('m','') 
+    
+    if(not duration == ''):
+        minutes = int(duration)
+    
+    return days*24*60 + hours*60 + minutes
+    
+    
 #Method that sends email from the gmail account given
 def send_email(user, pwd, to_adress, subject, message):
     """
@@ -178,6 +210,7 @@ def get_movie(index):
         year = int(str(browser.execute_script("return document.getElementsByClassName('title_wrapper')[0].childNodes[1].childNodes[1].childNodes[1].innerHTML")))
         
         #Parental Grading
+        
         parental_grading = str(browser.execute_script("return document.getElementsByClassName('subtext')[0].childNodes[1].getAttribute('content')"))
         
         movie = Movie(index, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
@@ -283,5 +316,5 @@ def extract_movies(min_id, max_id):
 
 if __name__ == "__main__":
     
-    movie = get_movie(4574334)[1]
+    movie = get_movie(1)[1]
     print(movie.print_movie())
