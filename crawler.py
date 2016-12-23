@@ -236,6 +236,20 @@ def get_db():
 #end of get_db 
 
 #inserts a given movie to the data_base
+def insert_movie(movie):
+    
+    try:
+        db = get_db()
+        query = "INSERT INTO movies (id, original_title, browser_title,r_year, parental_grading, duration, rating, num_votes) "
+        query = query + "VALUES (" + str(movie.index) + ", '" + movie.original_title + "', '" + movie.browser_title + "', "
+        query = query + str(movie.year) + ", '" + movie.parental_grading + "', " + str(movie.duration) + ", " + str(movie.rating) + ", " + str(movie.num_votes) + ")"
+        db.query(query)
+                
+
+    finally:
+        db.close()
+    
+
 
 #Updates and id of a given movie
 def update_id(movie_id, status):
@@ -293,4 +307,5 @@ def is_unckecked(movie_id):
 
 if __name__ == "__main__":
     
-    print(is_unckecked(1000))
+    stat, movie = get_movie(1)
+    insert_movie(movie)
