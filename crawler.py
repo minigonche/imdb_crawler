@@ -25,7 +25,7 @@ class Movie:
     browser_title = ''
     year = 0
     parental_grading = 'NA'
-    duration = ''
+    duration = -1
     rating = 0.0
     num_votes = 0
     
@@ -157,7 +157,7 @@ def get_movie(index):
     browser_title = ''
     year = 0
     parental_grading = 'NA'
-    duration = ''
+    duration = -1
     rating = 0.0
     num_votes = 0
     
@@ -186,7 +186,8 @@ def get_movie(index):
             
         
         #Duration
-        duration = str(browser.execute_script("return document.getElementsByTagName('time')[0].innerHTML")).replace('  ','').replace('\n','')
+        duration = to_minutes(str(browser.execute_script("return document.getElementsByTagName('time')[0].innerHTML")).replace('  ','').replace('\n',''))
+        
         
         #Not enough stars
         voted = browser.execute_script("return document.getElementsByClassName('notEnoughRatings').length") == 0
@@ -224,97 +225,72 @@ def get_movie(index):
         display.stop()
         print('Browser and Display closed')
         sys.stdout.flush()
-        
+
+#end of get_movie
 
 
-#The methods that extracts the lowest lifeMiles value for a given trip
-def extract_movies(min_id, max_id):
+#Single method for extracting the database
+def get_db():
+    return _mysql.connect(host="imdb-crawler.coxl8wirabtc.us-west-1.rds.amazonaws.com",user="imdb",
+                      passwd="imdbcrawler",db="imdb")
+#end of get_db 
+
+#inserts a given movie to the data_base
+
+#Updates and id of a given movie
+def update_id(movie_id, status):
+    
     """
         Parameters
         ----------
-        min_id : int
-            A seven digit number of the initial id of the movie to crawl
-        max_id : int
-            A seven digit number of the final id of the movie to crawl
+        movie_id : int
+            The index of the movie to be searched
+        status :  String    
+            The new index of the movie 
+        ----------
     """
-    
-    #Cretaes the display, without this the webDriver invocation fails
-    display = Display(visible=0, size=(1024, 768))
-    display.start()
-    
-    #Uses the Chrome driver, Firefox could not get pass the send form step
-    browser = webdriver.Chrome()
-    
     try:
-        browser.get('http://www.imdb.com/title/tt4123432/')
+        db= get_db()
+        db.query("UPDATE movie_ids SET stat = '" + status + "' WHERE id = " + str(movie_id))
+
+    finally:
+        db.close()
         
-        #Browser Title
-        browser_title = str(browser.execute_script("return document.getElementsByClassName('title_wrapper')[0].childNodes[1].innerHTML")).split('&nbsp;')[0]
+#end of update_id
+
+
+
+#gets the status of a given id
+def get_status(movie_id):
+    try:
+        db=get_db()
+                   
+        db.query("SELECT * FROM movie_ids WHERE id = " + str(movie_id))
         
-        #Original Title
-        original_title = None
-        if(browser.execute_script("return document.getElementsByClassName('originalTitle').length") > 0):
-            original_title = str(browser.execute_script("return document.getElementsByClassName('originalTitle')[0].innerHTML")).split('<span')[0]
+        r=db.store_result()
         
-        #Released
-        released = browser.execute_script("return document.getElementsByClassName('imdbRating').length") > 0
+        status = str(r.fetch_row(how = 1)[0]['stat'])
+        status = status.replace('b','')
+        status = status.replace("'","")
         
-        if(not released):
-            print(original_title)
-            print(browser_title)
-            print('not released')
-            sys.exit('ok')
-        
-        #Year
-        year = str(browser.execute_script("return document.getElementsByClassName('title_wrapper')[0].childNodes[1].childNodes[1].childNodes[1].innerHTML"))
-        
-        #Parental Grading
-        parental_grading = str(browser.execute_script("return document.getElementsByClassName('subtext')[0].childNodes[1].getAttribute('content')"))
-        
-        #Duration
-        duration = str(browser.execute_script("return document.getElementsByTagName('time')[0].innerHTML")).replace('  ','').replace('\n','')
-        
-        #Not enough stars
-        voted = browser.execute_script("return document.getElementsByClassName('notEnoughRatings').length") == 0
-        
-        if(not voted):
-            print(original_title)
-            print(browser_title)
-            print(year)
-            print(parental_grading)
-            print(duration)
-            print('not voted')
-            sys.exit('ok')
-        
-        #Rating
-        rating = str(browser.execute_script("return document.getElementsByClassName('imdbRating')[0].childNodes[1].childNodes[1].childNodes[0].innerHTML"))
-        
-        #number of votes
-        num_votes = str(browser.execute_script("return document.getElementsByClassName('imdbRating')[0].childNodes[3].childNodes[0].innerHTML")).replace('.','').replace(',','')
-        
-        
-        
-        
-        print(original_title)
-        print(browser_title)
-        print(year)
-        print(parental_grading)
-        print(duration)
-        print(rating)
-        print(num_votes)
-        
-    
+        return status
     
     finally:
-        
-        browser.quit()
-        display.stop()
-        print('Browser and Display closed')
-        sys.stdout.flush()
-        
+        db.close()
+
+#end of get_status        
+    
+    
+    
+    
+#Checks if a given ID is uncheched    
+def is_unckecked(movie_id):
+    return get_status(movie_id) == 'UC'
+#end of is_unckecked    
+    
+
 
 
 if __name__ == "__main__":
     
-    movie = get_movie(1)[1]
-    print(movie.print_movie())
+    print(is_unckecked(1000))
