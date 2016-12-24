@@ -21,6 +21,7 @@ import _mysql
 class Movie:
     
     index = -1
+    status = 'UC'
     original_title = ''
     browser_title = ''
     year = 0
@@ -29,8 +30,9 @@ class Movie:
     rating = 0.0
     num_votes = 0
     
-    def __init__(self, index, original_title, browser_title, year, parental_grading, duration, rating, num_votes):
+    def __init__(self, index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes):
         self.index = index
+        self.status = status
         self.original_title = original_title
         self.browser_title = browser_title
         self.year = year
@@ -176,24 +178,29 @@ def get_movie(index):
         #Original Title
         if(browser.execute_script("return document.getElementsByClassName('originalTitle').length") > 0):
             original_title = str(browser.execute_script("return document.getElementsByClassName('originalTitle')[0].innerHTML")).split('<span')[0]
+        else:
+            original_title = browser_title
         
         #Released
         released = browser.execute_script("return document.getElementsByClassName('imdbRating').length") > 0
         
         if(not released):
-            movie = Movie(index, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
+            status = 'NR'
+            movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
             return ['NR', movie]
             
         
         #Duration
-        duration = to_minutes(str(browser.execute_script("return document.getElementsByTagName('time')[0].innerHTML")).replace('  ','').replace('\n',''))
+        if(browser.execute_script("return document.getElementsByTagName('time').length") > 0):
+            duration = to_minutes(str(browser.execute_script("return document.getElementsByTagName('time')[0].innerHTML")).replace('  ','').replace('\n',''))
         
         
         #Not enough stars
         voted = browser.execute_script("return document.getElementsByClassName('notEnoughRatings').length") == 0
         
         if(not voted):
-            movie = Movie(index, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
+            status = 'NV'
+            movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
             return ['NV', movie]
         
         #Rating
@@ -204,17 +211,18 @@ def get_movie(index):
         
         #Checks if the given index is a series (this is probably cheating, there must be a more standard method)
         if(browser.execute_script("return document.getElementsByClassName('title_wrapper')[0].childNodes[1].childNodes.length") == 1):
-            movie = Movie(index, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
+            status = 'SE'
+            movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
             return ['SE', movie]
         
         #Year
         year = int(str(browser.execute_script("return document.getElementsByClassName('title_wrapper')[0].childNodes[1].childNodes[1].childNodes[1].innerHTML")))
         
         #Parental Grading
-        
         parental_grading = str(browser.execute_script("return document.getElementsByClassName('subtext')[0].childNodes[1].getAttribute('content')"))
         
-        movie = Movie(index, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
+        status = 'OK'
+        movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
         return ['OK', movie]
         
 
@@ -223,7 +231,7 @@ def get_movie(index):
         
         browser.quit()
         display.stop()
-        print('Browser and Display closed')
+        #print('Browser and Display closed')
         sys.stdout.flush()
 
 #end of get_movie
@@ -240,8 +248,8 @@ def insert_movie(movie):
     
     try:
         db = get_db()
-        query = "INSERT INTO movies (id, original_title, browser_title,r_year, parental_grading, duration, rating, num_votes) "
-        query = query + "VALUES (" + str(movie.index) + ", '" + movie.original_title + "', '" + movie.browser_title + "', "
+        query = "INSERT INTO movies (id, stat, original_title, browser_title,r_year, parental_grading, duration, rating, num_votes) "
+        query = query + "VALUES (" + str(movie.index) + ", '" + movie.status + "', '"+ movie.original_title + "', '" + movie.browser_title + "', "
         query = query + str(movie.year) + ", '" + movie.parental_grading + "', " + str(movie.duration) + ", " + str(movie.rating) + ", " + str(movie.num_votes) + ")"
         db.query(query)
                 
@@ -265,7 +273,8 @@ def update_id(movie_id, status):
     """
     try:
         db= get_db()
-        db.query("UPDATE movie_ids SET stat = '" + status + "' WHERE id = " + str(movie_id))
+        query = "UPDATE movie_ids SET stat = '" + str(status) + "' WHERE id = " + str(movie_id)
+        db.query(query)
 
     finally:
         db.close()
@@ -303,9 +312,36 @@ def is_unckecked(movie_id):
 #end of is_unckecked    
     
 
+#Runs the random scheme for populating the data base
+def run_random():
+    
+    while(True):
+        #Gets the random index 
+        index = np.random.randint(10000000)
+        
+        #Cheks if the movie is unchecked or not
+        if(is_unckecked(index)):
+            stat, movie = get_movie(index)
+           
+            if(not stat == 'NA'):
+                insert_movie(movie)
+                
+            update_id(index, stat)
+             
+            print('ID: ' +  str(index) + ' Checked')
+            sys.stdout.flush()
+        else:
+            print('Movie already checked')
+            sys.stdout.flush()
+        
+        
+
+
 
 
 if __name__ == "__main__":
     
-    stat, movie = get_movie(1)
-    insert_movie(movie)
+    if(len(sys.argv) == 1 or sys.argv[1].upper() == 'RANDOM'):
+        run_random()
+        
+    
