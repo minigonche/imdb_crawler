@@ -230,8 +230,8 @@ def get_movie(index):
     
     except Exception as e: 
         
-        print str(e)
-        print str(index)
+        print(str(e))
+        print(str(index))
     
 
     
@@ -263,8 +263,8 @@ def insert_movie(movie):
     
     except Exception as e: 
         
-        print str(e)
-        print str(movie.index)        
+        print(str(e))
+        print(str(movie.index))
                 
 
     finally:
@@ -291,8 +291,8 @@ def update_id(movie_id, status):
     
     except Exception as e: 
         
-        print str(e)
-        print str(movie_id)      
+        print(str(e))
+        print(str(movie_id))
 
     finally:
         db.close()
@@ -317,8 +317,8 @@ def get_status(movie_id):
         return status
     
     except Exception as e: 
-        print str(e)
-        print str(movie_id)     
+        print(str(e))
+        print(str(movie_id))
     
     finally:
         db.close()
