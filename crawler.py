@@ -227,7 +227,12 @@ def get_movie(index):
         status = 'OK'
         movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
         return ['OK', movie]
+    
+    except Exception as e: 
         
+        print str(e)
+        print str(index)
+    
 
     
     finally:
@@ -255,6 +260,11 @@ def insert_movie(movie):
         query = query + "VALUES (" + str(movie.index) + ", '" + movie.status + "', '"+ movie.original_title + "', '" + movie.browser_title + "', "
         query = query + str(movie.year) + ", '" + movie.parental_grading + "', " + str(movie.duration) + ", " + str(movie.rating) + ", " + str(movie.num_votes) + ")"
         db.query(query)
+    
+    except Exception as e: 
+        
+        print str(e)
+        print str(movie.index)        
                 
 
     finally:
@@ -278,6 +288,11 @@ def update_id(movie_id, status):
         db= get_db()
         query = "UPDATE movie_ids SET stat = '" + str(status) + "' WHERE id = " + str(movie_id)
         db.query(query)
+    
+    except Exception as e: 
+        
+        print str(e)
+        print str(movie_id)      
 
     finally:
         db.close()
@@ -300,6 +315,10 @@ def get_status(movie_id):
         status = status.replace("'","")
         
         return status
+    
+    except Exception as e: 
+        print str(e)
+        print str(movie_id)     
     
     finally:
         db.close()
