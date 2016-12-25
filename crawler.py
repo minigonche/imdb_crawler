@@ -180,6 +180,9 @@ def get_movie(index):
             original_title = str(browser.execute_script("return document.getElementsByClassName('originalTitle')[0].innerHTML")).split('<span')[0]
         else:
             original_title = browser_title
+            
+        browser_title = browser_title.replace("'", " ")
+        original_title = original_title.replace("'", " ")
         
         #Released
         released = browser.execute_script("return document.getElementsByClassName('imdbRating').length") > 0
