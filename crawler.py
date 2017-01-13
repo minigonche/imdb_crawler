@@ -222,7 +222,9 @@ def get_movie(index):
         year = int(str(browser.execute_script("return document.getElementsByClassName('title_wrapper')[0].childNodes[1].childNodes[1].childNodes[1].innerHTML")))
         
         #Parental Grading
-        parental_grading = str(browser.execute_script("return document.getElementsByClassName('subtext')[0].childNodes[1].getAttribute('content')"))
+        
+        if(browser.execute_script("return document.getElementsByClassName('subtext')[0].childNodes.length") > 1):
+            parental_grading = str(browser.execute_script("return document.getElementsByClassName('subtext')[0].childNodes[1].getAttribute('content')"))
         
         status = 'OK'
         movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
