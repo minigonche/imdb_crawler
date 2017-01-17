@@ -230,12 +230,6 @@ def get_movie(index):
         movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
         return ['OK', movie]
     
-    except Exception as e: 
-        
-        print(str(e))
-        print(str(index))
-    
-
     
     finally:
         
@@ -263,11 +257,6 @@ def insert_movie(movie):
         query = query + str(movie.year) + ", '" + movie.parental_grading + "', " + str(movie.duration) + ", " + str(movie.rating) + ", " + str(movie.num_votes) + ")"
         db.query(query)
     
-    except Exception as e: 
-        
-        print(str(e))
-        print(str(movie.index))
-                
 
     finally:
         db.close()
@@ -291,10 +280,6 @@ def update_id(movie_id, status):
         query = "UPDATE movie_ids SET stat = '" + str(status) + "' WHERE id = " + str(movie_id)
         db.query(query)
     
-    except Exception as e: 
-        
-        print(str(e))
-        print(str(movie_id))
 
     finally:
         db.close()
@@ -318,10 +303,6 @@ def get_status(movie_id):
         
         return status
     
-    except Exception as e: 
-        print(str(e))
-        print(str(movie_id))
-    
     finally:
         db.close()
 
@@ -340,29 +321,34 @@ def is_unckecked(movie_id):
 def run_random():
     
     while(True):
-        #Gets the random index 
-        index = np.random.randint(10000000)
         
-        #Cheks if the movie is unchecked or not
-        if(is_unckecked(index)):
-            stat, movie = get_movie(index)
-           
-            if(not stat == 'NA'):
-                insert_movie(movie)
+        try:
+            #Gets the random index 
+            index = np.random.randint(10000000)
+            
+            #Cheks if the movie is unchecked or not
+            if(is_unckecked(index)):
+                stat, movie = get_movie(index)
+               
+                if(not stat == 'NA'):
+                    insert_movie(movie)
+                    
+                update_id(index, stat)
+                 
+                print('ID: ' +  str(index) + ' Checked')
+                sys.stdout.flush()
+            else:
+                print('Movie already checked')
+                sys.stdout.flush()
                 
-            update_id(index, stat)
-             
-            print('ID: ' +  str(index) + ' Checked')
+        except Exception as e: 
+            print('Error in Index: ' +  str(index))
+            print(str(e))
+            print('----------------------------------------')
+            print(' ')
             sys.stdout.flush()
-        else:
-            print('Movie already checked')
-            sys.stdout.flush()
+            
         
-        
-
-
-
-
 if __name__ == "__main__":
     
     if(len(sys.argv) == 1 or sys.argv[1].upper() == 'RANDOM'):
