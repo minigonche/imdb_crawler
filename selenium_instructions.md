@@ -41,3 +41,4 @@ sudo apt-get install unzip
 wget https://chromedriver.storage.googleapis.com/2.25/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip 
 sudo mv chromedriver /usr/bin/
+rm -r chromedriver_linux64.zip 
