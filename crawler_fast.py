@@ -401,6 +401,7 @@ def run_random():
             #Gets the random index 
             index = np.random.randint(10000000)
 
+
             #Cheks if the movie is unchecked or not
             if(is_unckecked(index)):
                 stat, movie = get_movie(index)
@@ -410,7 +411,7 @@ def run_random():
                     
                 update_id(index, stat)
                 
-                print('ID: ' +  str(index) + ' Checked')
+                print('ID: ' +  str(index) + ' Checked ' + stat)
                 sys.stdout.flush()
                 
             else:
@@ -419,7 +420,7 @@ def run_random():
                 
         except Exception as e: 
             print('Error in Index: ' +  str(index))
-            print(str(e))
+            print(e)
             print('----------------------------------------')
             print(' ')
             sys.stdout.flush()
