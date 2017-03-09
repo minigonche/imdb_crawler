@@ -303,6 +303,8 @@ def get_movie(index):
         if(not year is None):
             year = clean(find_between(year, search_strings['year'][2], search_strings['year'][3]))
         
+        if(year is None):
+            year = 0
         #Parental Grading
 
         status = 'OK'
