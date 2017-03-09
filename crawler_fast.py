@@ -304,7 +304,7 @@ def get_movie(index):
         is_video_game = is_substring(content, search_strings['video_game'][0]) and duration == -1
         #checks if the id is a video game
         if(is_video_game):
-            status = 'SE'
+            status = 'VG'
             movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
             return ['VG', movie]
             
