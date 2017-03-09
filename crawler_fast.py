@@ -196,6 +196,8 @@ def get_movie(index):
     search_strings['is_episode'] = ['Season','Episode','All Episodes']
     #year
     search_strings['year'] = ['<span id="titleYear">','</span>','\\n>','</a>)']
+    #Is video game
+    search_strings['video_game'] = ['Video game']
     
 
     
@@ -297,6 +299,15 @@ def get_movie(index):
             status = 'SE'
             movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
             return ['SE', movie]
+        
+        
+        is_video_game = is_substring(content, search_strings['video_game'][0]) and duration == -1
+        #checks if the id is a video game
+        if(is_video_game):
+            status = 'SE'
+            movie = Movie(index, status, original_title, browser_title, year, parental_grading, duration, rating, num_votes)
+            return ['VG', movie]
+            
         
         #Year
         year = find_between(content, search_strings['year'][0], search_strings['year'][1])
