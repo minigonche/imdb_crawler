@@ -400,27 +400,19 @@ def run_random():
         try:
             #Gets the random index 
             index = np.random.randint(10000000)
-#            print('----------------------------------------')
-            
-#            print(index)
-            
+
             #Cheks if the movie is unchecked or not
             if(is_unckecked(index)):
                 stat, movie = get_movie(index)
                
-#                if(not stat == 'NA'):
-#                    insert_movie(movie)
+                if(not stat == 'NA'):
+                    insert_movie(movie)
                     
-#                update_id(index, stat)
+                update_id(index, stat)
                 
-#                print(stat)
-#                if(stat != 'NA'):
-#                    print(movie.print_movie())
-                
-                 
                 print('ID: ' +  str(index) + ' Checked')
-#                print('----------------------------------------')
                 sys.stdout.flush()
+                
             else:
                 print('Movie already checked')
                 sys.stdout.flush()
@@ -431,6 +423,7 @@ def run_random():
             print('----------------------------------------')
             print(' ')
             sys.stdout.flush()
+            sys.exit()
             
         
 if __name__ == "__main__":
