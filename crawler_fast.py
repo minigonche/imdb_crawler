@@ -272,6 +272,8 @@ def get_movie(index):
         
         #number of votes
         num_votes = find_between(content, search_strings['num_votes'][0], search_strings['num_votes'][1])
+        if(not num_votes is None):
+            num_votes = num_votes.replace(',','')
         
         is_series = is_substring(content, search_strings['is_series'][0])
 
@@ -330,6 +332,10 @@ def insert_movie(movie):
         query = "INSERT INTO movies (id, stat, original_title, browser_title,r_year, parental_grading, duration, rating, num_votes) "
         query = query + "VALUES (" + str(movie.index) + ", '" + movie.status + "', '"+ movie.original_title + "', '" + movie.browser_title + "', "
         query = query + str(movie.year) + ", '" + movie.parental_grading + "', " + str(movie.duration) + ", " + str(movie.rating) + ", " + str(movie.num_votes) + ")"
+        
+        print(query)
+        
+        
         db.query(query)
     
 
@@ -425,12 +431,43 @@ def run_random():
             print(' ')
             sys.stdout.flush()
             sys.exit()
+#end of run_random
+
+def run_single_movie(index):            
+    try:
+
+        #Cheks if the movie is unchecked or not
+        if(is_unckecked(index)):
+            stat, movie = get_movie(index)
             
+            print(movie.print_movie())
+           
+            if(not stat == 'NA'):
+                insert_movie(movie)
+                
+            update_id(index, stat)
+            
+            print('ID: ' +  str(index) + ' Checked ' + stat)
+            sys.stdout.flush()
+            
+        else:
+            print('Movie already checked')
+            sys.stdout.flush()
+            
+    except Exception as e: 
+        print('Error in Index: ' +  str(index))
+        print(e)
+        print('----------------------------------------')
+        print(' ')
+        sys.stdout.flush()
+        sys.exit()
         
 if __name__ == "__main__":
     
     if(len(sys.argv) == 1 or sys.argv[1].upper() == 'RANDOM'):
         run_random()
+    else:
+        run_single_movie(sys.argv[1])
         
     
 
