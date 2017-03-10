@@ -516,6 +516,8 @@ if __name__ == "__main__":
     
     if(len(sys.argv) == 1 or sys.argv[1].upper() == 'RANDOM'):
         run_random()
+    elif(sys.argv[1].upper() == 'SEQUENTIAL'): 
+        run_sequential()
     else:
         run_single_movie(sys.argv[1])
         
