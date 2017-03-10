@@ -444,6 +444,45 @@ def run_random():
             sys.exit()
 #end of run_random
 
+#Runs the random scheme for populating the data base
+def run_sequential():
+    
+    max_index = 10000000
+    index = np.random.randint(max_index)
+    while(True):
+        
+        try:
+            #Gets the random index 
+            index = index + 1
+            if(index >= max_index):
+                index = index - max_index
+
+
+            #Cheks if the movie is unchecked or not
+            if(is_unckecked(index)):
+                stat, movie = get_movie(index)
+               
+                if(not stat == 'NA'):
+                    insert_movie(movie)
+                    
+                update_id(index, stat)
+                
+                print('ID: ' +  str(index) + ' Checked ' + stat)
+                sys.stdout.flush()
+                
+            else:
+                print('Movie already checked')
+                sys.stdout.flush()
+                
+        except Exception as e: 
+            print('Error in Index: ' +  str(index))
+            print(e)
+            print('----------------------------------------')
+            print(' ')
+            sys.stdout.flush()
+            sys.exit()
+#end of run_random
+
 def run_single_movie(index):            
     try:
 
