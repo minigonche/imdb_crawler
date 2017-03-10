@@ -193,7 +193,7 @@ def get_movie(index):
     #is series
     search_strings['is_series'] = ['>Episode Guide<']
     #is episode
-    search_strings['is_episode'] = ['Season','Episode','All Episodes']
+    search_strings['is_episode'] = ['All Episodes']
     #year
     search_strings['year'] = ['<span id="titleYear">','</span>','\\n>','</a>)']
     #Is video game
@@ -277,21 +277,18 @@ def get_movie(index):
         if(not num_votes is None):
             num_votes = num_votes.replace(',','')
         
+        #Year
+        year = find_between(content, search_strings['year'][0], search_strings['year'][1])
+        if(not year is None):
+            year = clean(find_between(year, search_strings['year'][2], search_strings['year'][3]))
+        
+        if(year is None):
+            year = 0    
+        
         is_series = is_substring(content, search_strings['is_series'][0])
 
+        is_episode = is_substring(content, search_strings['is_episode'][0]) and year == 0
 
-        is_episode = True
-        for s in  search_strings['is_episode']:
-        
-            if(is_series):
-                break
-            
-            
-            is_episode = is_episode and  is_substring(content, s)
-            
-            if(not is_episode):
-                break
-        
         is_series = is_series or is_episode
         
         #Checks if the given index is a series (this is probably cheating, there must be a more standard method)
@@ -309,13 +306,7 @@ def get_movie(index):
             return ['VG', movie]
             
         
-        #Year
-        year = find_between(content, search_strings['year'][0], search_strings['year'][1])
-        if(not year is None):
-            year = clean(find_between(year, search_strings['year'][2], search_strings['year'][3]))
-        
-        if(year is None):
-            year = 0
+
         #Parental Grading
 
         status = 'OK'
