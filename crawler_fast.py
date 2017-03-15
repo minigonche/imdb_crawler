@@ -560,6 +560,9 @@ def run_selected_batch(size):
             sys.stdout.flush()
             sys.exit()
         
+def run_infinite_batch():
+    while(True):
+        run_selected_batch(100000)
     
     
 if __name__ == "__main__":
@@ -569,7 +572,9 @@ if __name__ == "__main__":
     elif(sys.argv[1].upper() == 'SEQUENTIAL'): 
         run_sequential()
     elif(sys.argv[1].upper() == 'BATCH'):
-        print(run_selected_batch(int(sys.argv[2])))
+        run_selected_batch(int(sys.argv[2]))
+    elif(sys.argv[1].upper() == 'BATCH_INFINITE'):
+        run_infinite_batch()
     else:
         run_single_movie(sys.argv[1])
         
