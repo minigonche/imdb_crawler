@@ -390,7 +390,33 @@ def get_status(movie_id):
         db.close()
 
 #end of get_status        
+
+
+def get_id_batch(size):
+    try:
+        db=get_db()
+                   
+        db.query("SELECT id FROM movie_ids WHERE stat = 'UC' order by RAND() limit " + str(size))
+        
+        r=db.store_result()
+        
+        ids = r.fetch_row(maxrows = 0, how = 1)
+        
+        result = []
+        
+        for i in range(len(ids)):
+            temp = str(ids[i]['id'])
+            temp = temp.replace('b','')
+            temp = temp.replace("'","")
+            temp = int(temp)
+            result.append(temp)
+            
+        
+        return result
     
+    finally:
+        db.close()
+#end of get_id_batch    
     
     
     
@@ -502,13 +528,48 @@ def run_single_movie(index):
         print(' ')
         sys.stdout.flush()
         sys.exit()
+
+
+def run_selected_batch(size):
+    
+    ids = get_id_batch(size)
+    
+    for index in ids:
+        try:
+            #Cheks if the movie is unchecked or not
+            if(is_unckecked(index)):
+                stat, movie = get_movie(index)
+               
+                if(not stat == 'NA'):
+                    insert_movie(movie)
+                    
+                update_id(index, stat)
+                
+                print('ID: ' +  str(index) + ' Checked ' + stat)
+                sys.stdout.flush()
+                
+            else:
+                print('Movie already checked')
+                sys.stdout.flush()
+                
+        except Exception as e: 
+            print('Error in Index: ' +  str(index))
+            print(e)
+            print('----------------------------------------')
+            print(' ')
+            sys.stdout.flush()
+            sys.exit()
         
+    
+    
 if __name__ == "__main__":
     
     if(len(sys.argv) == 1 or sys.argv[1].upper() == 'RANDOM'):
         run_random()
     elif(sys.argv[1].upper() == 'SEQUENTIAL'): 
         run_sequential()
+    elif(sys.argv[1].upper() == 'BATCH'):
+        print(run_selected_batch(int(sys.argv[2])))
     else:
         run_single_movie(sys.argv[1])
         
