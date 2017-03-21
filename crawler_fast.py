@@ -563,6 +563,9 @@ def run_selected_batch(size):
 def run_infinite_batch():
     while(True):
         run_selected_batch(100000)
+        print('Batch Finished')
+        sys.stdout.flush()
+        sys.exit()
     
     
 if __name__ == "__main__":
