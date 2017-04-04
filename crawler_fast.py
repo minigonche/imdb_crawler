@@ -437,6 +437,8 @@ def get_id_batch_from_file():
         
     for line in file:
         result.append(line.replace('\n',''))
+    
+    file.close()    
         
     
     return result
