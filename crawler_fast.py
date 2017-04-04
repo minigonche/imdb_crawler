@@ -217,7 +217,6 @@ def get_movie(index):
         #Loads the manager
         http = urllib3.PoolManager()
         
-        
         #Gets the request
         r = http.request('GET', 'http://www.imdb.com/title/tt' + search_index + '/')
         
@@ -417,6 +416,32 @@ def get_id_batch(size):
     finally:
         db.close()
 #end of get_id_batch    
+
+
+def store_id_batch(size):
+    
+    result = get_id_batch(size)
+    
+    file = open('saved_ids', 'w')
+    for index in result:
+        file.write(str(index) + '\n')
+    
+    print('File Created with ' + str(size) + ' entries')
+    file.close()    
+
+def get_id_batch_from_file():
+    
+    result = []
+    
+    file = open('saved_ids', 'r')
+        
+    for line in file:
+        result.append(line.replace('\n',''))
+        
+    
+    return result
+    
+
     
     
     
@@ -559,6 +584,45 @@ def run_selected_batch(size):
             print(' ')
             sys.stdout.flush()
             sys.exit()
+
+def run_selected_batch_from_file():
+    
+    ids = get_id_batch_from_file()
+    
+
+    while(True):
+        
+        try:
+            #Gets the random index 
+            index = str(ids[np.random.randint(len(ids))])
+
+
+            #Cheks if the movie is unchecked or not
+            if(is_unckecked(index)):
+                stat, movie = get_movie(index)
+               
+                if(not stat == 'NA'):
+                    insert_movie(movie)
+                    
+                update_id(index, stat)
+                
+                print('ID: ' +  str(index) + ' Checked ' + stat)
+                sys.stdout.flush()
+                
+            else:
+                print('Movie already checked')
+                sys.stdout.flush()
+                
+        except Exception as e: 
+            print('Error in Index: ' +  str(index))
+            print(e)
+            print('----------------------------------------')
+            print(' ')
+            sys.stdout.flush()
+            sys.exit()
+
+
+
         
 def run_infinite_batch():
     while(True):
@@ -567,6 +631,10 @@ def run_infinite_batch():
         sys.stdout.flush()
         sys.exit()
     
+    
+    
+    
+
     
 if __name__ == "__main__":
     
@@ -578,6 +646,10 @@ if __name__ == "__main__":
         run_selected_batch(int(sys.argv[2]))
     elif(sys.argv[1].upper() == 'BATCH_INFINITE'):
         run_infinite_batch()
+    elif(sys.argv[1].upper() == 'EXTRACT'):
+        store_id_batch(int(sys.argv[2]))
+    elif(sys.argv[1].upper() == 'BATCH_INFINITE_FILE'):
+        run_selected_batch_from_file()
     else:
         run_single_movie(sys.argv[1])
         
