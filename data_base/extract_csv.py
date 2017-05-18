@@ -44,13 +44,22 @@ def load_movie_ids():
 
 
 #Gets the movies  and saves them inside a csv called movies.csv
-def load_movies():
+def load_movies(status = None):
     try:
-        file = open('movies.csv', 'w')
+        if(status == None):
+            file = open('movies.csv', 'w')
+        else:
+            file = open('movies_' + status + '.csv', 'w')
+        
+        
         file.write('id, stat, original_title, browser_title, r_year, parental_grading, duration, rating, num_votes' + '\n')
         
         db=get_db()
-        db.query("SELECT * FROM movies")
+        if(status == None):
+            db.query("SELECT * FROM movies")
+        else:
+            db.query("SELECT * FROM movies " + "WHERE stat = '" + status + "'")
+        
         r=db.use_result()
         row = r.fetch_row(how = 1)
         i = 0
@@ -77,8 +86,10 @@ def load_movies():
         db.close()
         file.close()
 
+
+
 #end of load movies
-print('Start Movie_ids')
-load_movie_ids()
-print('Start Movies')
-load_movies()
+load_movies('OK')
+
+
+
