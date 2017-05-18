@@ -78,5 +78,7 @@ def load_movies():
         file.close()
 
 #end of load movies
-
+print('Start Movie_ids')
+load_movie_ids()
+print('Start Movies')
 load_movies()
